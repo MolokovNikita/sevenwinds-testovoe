@@ -1,0 +1,66 @@
+$navbar-bg: rgba(39, 39, 42, 1);
+$navbar-text-color-selected: rgba(255,255,255,1);
+$navbar-text-color: rgba(161,161,170,1);
+$border-color: rgba(255, 255, 255, 0.2);
+.header {
+  width: 100%;
+  height: 40px;
+  background-color: $navbar-bg;
+  color: $navbar-text-color;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  border-bottom: 1px solid $border-color;
+}
+
+.navbar {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+.nav_list {
+  display: flex;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  height: 100%;
+}
+
+.nav_item {
+  position: relative;
+  padding: 10px 15px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 1rem;
+  transition: background 0.3s;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.2);
+  }
+  &.selected {
+    color: $navbar-text-color-selected;
+    cursor: default;
+    &:hover{
+      background: none;
+    }
+    &::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background-color: white;
+    }
+  }
+
+
+}

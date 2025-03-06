@@ -1,0 +1,54 @@
+$navbar-bg: rgba(39, 39, 42, 1);
+$navbar-text-color: #fff;
+$sidebar-width: 240px;
+$border-color: rgba(255, 255, 255, 0.2);
+
+.title {
+  display: flex;
+  align-items: center;
+  position: fixed;
+  width: 100%;
+  height: 40px;
+  background: $navbar-bg;
+  top: 40px;
+  color: $navbar-text-color;
+  border-bottom: 1px solid $border-color;
+  .project_info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
+    width: $sidebar-width;
+    border-right: 1px solid $border-color;
+    position: relative;
+    cursor: pointer;
+    &:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+  }
+  .project_name {
+    font-size: 1rem;
+  }
+
+  .project_abbreviation,
+  .project_name {
+    margin: 0 0 0 1.5rem;
+    color: rgba(161, 161, 170, 1);
+    font-weight: 400;
+  }
+  .project_menu {
+    position: absolute;
+    right: 10px;
+  }
+
+  .selected_project {
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0 1rem;
+    border-right: 1px solid $border-color;
+
+    height: 100%;
+  }
+}

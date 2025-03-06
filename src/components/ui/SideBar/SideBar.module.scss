@@ -1,0 +1,47 @@
+$sidebar-width: 240px;
+$sidebar-bg: rgba(39, 39, 42, 1);
+$sidebar-text-color: #fff;
+$border-color: rgba(255, 255, 255, 0.2);
+
+.sidebar {
+  width: $sidebar-width;
+  height: 100vh;
+  background-color: $sidebar-bg;
+  color: $sidebar-text-color;
+  margin-top: 81px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  overflow-y: auto;
+  border-right: 1px solid $border-color;
+}
+
+.menu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.menu_item {
+  display: flex;
+  justify-content: start;
+  text-align: center;
+  align-items: center;
+  padding: 5px;
+  cursor: pointer;
+  transition: background 0.3s;
+  &:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+  &.selected {
+    background: rgba(161,161,170,1);
+    cursor: default;
+    //background: rgba(255, 255, 255, 0.1);
+
+  }
+  .item_icon {
+    display: flex;
+    margin-right: 1rem;
+    margin-left: 1rem;
+  }
+
+}
