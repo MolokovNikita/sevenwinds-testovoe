@@ -11,11 +11,22 @@ interface LayoutProps {
 const Layout = ({ children }: LayoutProps): JSX.Element => {
   return (
     <>
+      <Navbar />
+      <ProjectNavBar />
       <Box sx={{ display: "flex" }}>
-        <Navbar />
-        <ProjectNavBar />
         <Sidebar />
-        <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+        <Box
+          component="main"
+          sx={{
+            flexGrow: 1,
+            marginTop: "80px",
+            marginLeft: "240px",
+            display: "flex",
+            height: "calc(100vh - 80px)",
+            width: "100%", // Высота экрана минус navbar
+            overflow: "auto",
+          }}
+        >
           {children}
         </Box>
       </Box>
