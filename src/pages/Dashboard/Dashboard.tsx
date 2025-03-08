@@ -458,7 +458,7 @@ export default function Dashboard(): JSX.Element {
         ) : (
           <tbody>{renderRows(rows)}</tbody>
         )}
-        {errorText ? <tbody>{errorText}</tbody> : null}
+        {errorText ? <td>{errorText}</td> : null}
       </table>
     </Layout>
   );
