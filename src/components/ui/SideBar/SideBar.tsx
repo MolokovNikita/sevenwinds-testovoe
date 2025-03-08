@@ -1,4 +1,4 @@
-import styles from "./Sidebar.module.scss";
+import styles from "./SideBar.module.scss";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import { ReactNode } from "react";
 import { JSX } from "react";
