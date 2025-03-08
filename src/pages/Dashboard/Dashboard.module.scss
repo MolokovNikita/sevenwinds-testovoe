@@ -1,28 +1,145 @@
 table {
   border-collapse: collapse;
   table-layout: fixed;
-  width: 100%;
+  width: 99%;
+  margin: 0 auto;
   height: 40%;
 }
 
 td,
 th {
-  border: 1px solid gray;
+  border: none;
   padding: 5px;
   min-width: 100px;
 }
-
-
-.row td:first-child {
-  padding-left: var(--padding-left);
+thead{
+  tr{
+    th{
+      text-align: start;
+      align-items: center;
+      justify-content: center;
+      color: rgba(161, 161, 170, 1);
+      font-weight: 400;
+      font-size: 1rem;
+      border-bottom: 1px solid rgba(65, 65, 68, 1);
+      padding: 10px 0;
+    }
+  }
 }
 
-.row td {
-   border: 1px solid gray;
-   padding: 5px;
-   min-width: 100px;
- }
+.row{
+  td {
+    padding-left: 0;
+    min-width: 100px;
+    height: 60px;
+    box-sizing: border-box;
+    min-height: 10px;
+    border-bottom: 1px solid rgba(65, 65, 68, 1);
 
-.row td:first-child {
+  }
+  td:first-child {
+    padding-left: var(--padding-left);
+  }
+  td:first-child {
+    position: relative;
+  }
+  &:last-child {
+    td{
+      border: none;
+    }
+  }
+}
+
+
+.layer_container{
+  display: inline-flex;
   position: relative;
+  border-radius: 5px;
+  padding-right: 2px;
+  &:hover{
+    background: rgba(65, 65, 68, 1);
+    .trashfill_logo{
+      display: block;
+      cursor: pointer;
+    }
+  }
+  .document_logo{
+    margin-right: 3px;
+    cursor: pointer;
+  }
+  .trashfill_logo{
+    display: none;
+  }
+
 }
+
+.horizontal_line{
+  position: absolute;
+  width: 1px;
+  top: 20px;
+  left: 10px;
+  border-right: 1px solid white;
+}
+.vertical_line{
+  position: absolute;
+  width: 8px;
+  top: -9px;
+  left: -4px;
+  height: 20px;
+  border-bottom: 1px solid white;
+}
+
+//Стили для инпутов
+.inputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.editableInput {
+  width: 100%;
+  padding: 6px 0px;
+  border-radius: 4px;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  background: none;
+  border: 1px solid transparent;
+
+
+  &:hover {
+    border: 1px solid silver;
+    border-color: #bdbdbd;
+  }
+
+  &:focus {
+    outline: none;
+    border-color: #2196f3;
+    box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2);
+  }
+}
+
+.numberInput {
+  @extend .editableInput;
+  text-align: left;
+  //padding: 6px 12px;
+  max-width: 120px;
+
+  &::-webkit-inner-spin-button,
+  &::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  -moz-appearance: textfield;
+}
+
+//// Для общего стиля таблицы
+//td {
+//  padding: 8px 12px;
+//
+//  &:hover {
+//    .editableInput, .numberInput {
+//      //background-color: #f8f9fa;
+//    }
+//  }
+//}
