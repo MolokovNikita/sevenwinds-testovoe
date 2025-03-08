@@ -12,9 +12,10 @@ th {
   padding: 5px;
   min-width: 100px;
 }
-thead{
-  tr{
-    th{
+
+thead {
+  tr {
+    th {
       text-align: start;
       align-items: center;
       justify-content: center;
@@ -27,7 +28,7 @@ thead{
   }
 }
 
-.row{
+.row {
   td {
     padding-left: 0;
     min-width: 100px;
@@ -35,52 +36,62 @@ thead{
     box-sizing: border-box;
     min-height: 10px;
     border-bottom: 1px solid rgba(65, 65, 68, 1);
-
   }
   td:first-child {
     padding-left: var(--padding-left);
-  }
-  td:first-child {
     position: relative;
   }
   &:last-child {
-    td{
+    td {
       border: none;
     }
   }
 }
 
+th:nth-child(2),
+td:nth-child(2) {
+  width: 30%;
+  min-width: 200px;
+  max-width: 400px;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
 
-.layer_container{
+th:not(:nth-child(2)),
+td:not(:nth-child(2)) {
+  width: calc((100% - 30%) / (var(--column-count) - 1));
+}
+
+.layer_container {
   display: inline-flex;
   position: relative;
   border-radius: 5px;
   padding-right: 2px;
-  &:hover{
+  &:hover {
     background: rgba(65, 65, 68, 1);
-    .trashfill_logo{
+    .trashfill_logo {
       display: block;
       cursor: pointer;
     }
   }
-  .document_logo{
+  .document_logo {
     margin-right: 3px;
     cursor: pointer;
   }
-  .trashfill_logo{
+  .trashfill_logo {
     display: none;
   }
-
 }
 
-.horizontal_line{
+.horizontal_line {
   position: absolute;
   width: 1px;
   top: 20px;
   left: 10px;
   border-right: 1px solid white;
 }
-.vertical_line{
+
+.vertical_line {
   position: absolute;
   width: 8px;
   top: -9px;
@@ -89,11 +100,12 @@ thead{
   border-bottom: 1px solid white;
 }
 
-//Стили для инпутов
 .inputWrapper {
+  width: 80%;
   position: relative;
   display: flex;
   align-items: center;
+
 }
 
 .editableInput {
@@ -104,42 +116,71 @@ thead{
   transition: all 0.3s ease;
   background: none;
   border: 1px solid transparent;
-
-
   &:hover {
-    border: 1px solid silver;
-    border-color: #bdbdbd;
+    border: 1px solid rgba(65, 65, 68, 1);
   }
-
   &:focus {
     outline: none;
-    border-color: #2196f3;
-    box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2);
+  }
+
+}
+
+.editingRow td input {
+  border: 1px solid rgba(65, 65, 68, 1);
+}
+
+.inputField {
+  width: 100%;
+  padding: 5px;
+  border: 1px solid transparent;
+  transition: 0.3s;
+  &:focus {
+    border: 1px solid #2196f3;
+    box-shadow: 0 0 3px #2196f3;
+    outline: none;
   }
 }
 
 .numberInput {
   @extend .editableInput;
-  text-align: left;
-  //padding: 6px 12px;
-  max-width: 120px;
-
+  width: 80%;
+  text-align: start;
   &::-webkit-inner-spin-button,
   &::-webkit-outer-spin-button {
     -webkit-appearance: none;
     margin: 0;
   }
-
   -moz-appearance: textfield;
 }
 
-//// Для общего стиля таблицы
-//td {
-//  padding: 8px 12px;
-//
-//  &:hover {
-//    .editableInput, .numberInput {
-//      //background-color: #f8f9fa;
-//    }
-//  }
-//}
+.loader {
+  width: 24px;
+  height: 24px;
+  border: 5px solid #FFF;
+  border-bottom-color: transparent;
+  border-radius: 50%;
+  display: inline-block;
+  box-sizing: border-box;
+  animation: rotation 1s linear infinite;
+  margin-top: 20px;
+  margin-left: 10px;
+}
+
+@keyframes rotation {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+.numberCell {
+  text-align: right;
+  min-width: 120px;
+  padding-right: 15px;
+}
+
+.table td {
+  padding: 8px;
+  border-bottom: 1px solid #ddd;
+}
