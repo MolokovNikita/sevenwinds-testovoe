@@ -314,7 +314,8 @@ export default function Dashboard(): JSX.Element {
   });
 
   const renderRows = (items: Row[], level = 0): JSX.Element[] => {
-    return items.map((row) => {
+    if (!Array.isArray(items)) return [];
+    return items?.map((row) => {
       const children = hasChildren(row) ? row.child : [];
       let totalHeight =
         row.child?.length > 1
