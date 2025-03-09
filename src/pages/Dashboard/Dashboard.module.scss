@@ -114,6 +114,7 @@ td:not(:nth-child(2)) {
   padding: 6px 0px;
   border-radius: 4px;
   font-size: 14px;
+  color: #FFFFFF;
   transition: all 0.3s ease;
   background: none;
   border: 1px solid transparent;
@@ -132,6 +133,7 @@ td:not(:nth-child(2)) {
 
 .inputField {
   width: 100%;
+  color: #FFFFFF;
   padding: 5px;
   border: 1px solid transparent;
   transition: 0.3s;
@@ -146,6 +148,8 @@ td:not(:nth-child(2)) {
   @extend .editableInput;
   width: 80%;
   text-align: start;
+  color: #FFFFFF;
+
   &::-webkit-inner-spin-button,
   &::-webkit-outer-spin-button {
     -webkit-appearance: none;
