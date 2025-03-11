@@ -90,7 +90,7 @@ export default function Dashboard(): JSX.Element {
       if (cell) newHeights.set(id, cell.offsetHeight);
     });
     setCellHeights(newHeights);
-  }, [rows]);
+  }, [rows, setRows]);
 
   const createNewRow = (parentId: number | null): Row => ({
     id: Date.now(),
@@ -136,107 +136,115 @@ export default function Dashboard(): JSX.Element {
   };
 
   const handleBlur = (id: number, updatedRow: Row) => {
+    const deleteLocalRow = (rows: Row[]): Row[] => {
+      return rows
+        .filter((row) => row.id !== id)
+        .map((row) => ({
+          ...row,
+          child: deleteLocalRow(row.child),
+        }));
+    };
+
     if (
       !rowName.current?.value.trim() ||
       !salary.current?.value ||
       !equipmentCosts.current?.value
     ) {
       alert("Строка удалена: не все обязательные поля заполнены");
-      const deleteLocalRow = (rows: Row[]): Row[] => {
-        return rows
-          .filter((row) => row.id !== id)
-          .map((row) => ({
-            ...row,
-            child: deleteLocalRow(row.child),
-          }));
-      };
 
-      // Обновляем состояние и сбрасываем флаги
       setRows((prev) => deleteLocalRow(prev));
+
       setIsAdding(false);
       setParentId(null);
       setEditingRow(null);
       return;
-    } else {
-      if (isAdding) {
-        axios
-          .post(`${API_URL}/v1/outlay-rows/entity/${E_ID}/row/create`, {
-            equipmentCosts: parseFloat(
-              equipmentCosts.current.value.replace(/\s/g, ""),
-            ),
-            estimatedProfit: parseFloat(
-              (estimatedProfit.current?.value || "0").replace(/\s/g, ""),
-            ),
-            machineOperatorSalary: 0,
-            mainCosts: 0,
-            materials: 0,
-            mimExploitation: 0,
-            overheads: parseFloat(
-              (overheads.current?.value || "0").replace(/\s/g, ""),
-            ),
-            parentId: parentId ? parentId : null,
-            rowName: rowName.current.value,
-            salary: parseFloat(salary.current.value.replace(/\s/g, "")),
-            supportCosts: 0,
-          })
-          .then((res: AxiosResponse<ServerResponse>) => {
-            console.log(res.data);
-            const { current } = res.data;
-
-            // Сохраняем временные дочерние элементы
-            const tempRow = rows.find((row) => row.id === id);
-            current.child = tempRow?.child || [];
-
-            // Рекурсивная функция для замены ID
-            const updateRows = (items: Row[]): Row[] =>
-              items.map((item) => {
-                if (item.id === id) {
-                  return {
-                    ...current,
-                    child: updateRows(item.child),
-                  };
-                }
-                return {
-                  ...item,
-                  child: updateRows(item.child),
-                };
-              });
-
-            setRows((prev) => updateRows(prev));
-          })
-          .catch((error: AxiosError) => {
-            console.log(error.message);
-          })
-          .finally(() => {
-            setIsAdding(false);
-            setParentId(null);
-          });
-      }
-      if (!isAdding) {
-        // сохранение
-        axios
-          .post(`${API_URL}/v1/outlay-rows/entity/${E_ID}/row/${id}/update`, {
-            ...updatedRow,
-            rowName: rowName.current.value,
-            salary: parseFloat(salary.current.value.replace(/\s/g, "")),
-            equipmentCosts: parseFloat(
-              equipmentCosts.current.value.replace(/\s/g, ""),
-            ),
-            overheads: parseFloat(
-              (overheads.current?.value || "0").replace(/\s/g, ""),
-            ),
-            estimatedProfit: parseFloat(
-              (estimatedProfit.current?.value || "0").replace(/\s/g, ""),
-            ),
-          })
-          .then((res: AxiosResponse<ServerResponse>) => {
-            console.log("Данные успешно обновлены:", res.data);
-          })
-          .catch((error: AxiosError) => {
-            console.error("Ошибка при обновлении данных:", error.message);
-          });
-      }
     }
+
+    const updatedData = {
+      ...updatedRow,
+      rowName: rowName.current.value,
+      salary: parseFloat(salary.current.value.replace(/\s/g, "")),
+      equipmentCosts: parseFloat(
+        equipmentCosts.current.value.replace(/\s/g, ""),
+      ),
+      overheads: parseFloat(
+        (overheads.current?.value || "0").replace(/\s/g, ""),
+      ),
+      estimatedProfit: parseFloat(
+        (estimatedProfit.current?.value || "0").replace(/\s/g, ""),
+      ),
+    };
+
+    const updateRowsWithChanged = (rows: Row[], changedRows: Row[]): Row[] => {
+      return rows.map((row) => {
+        const changedRow = changedRows.find((c) => c.id === row.id);
+        if (changedRow) {
+          return {
+            ...changedRow,
+            child: updateRowsWithChanged(row.child, changedRows),
+          };
+        }
+        return {
+          ...row,
+          child: updateRowsWithChanged(row.child, changedRows),
+        };
+      });
+    };
+
+    if (isAdding) {
+      axios
+        .post(`${API_URL}/v1/outlay-rows/entity/${E_ID}/row/create`, {
+          ...updatedData,
+          machineOperatorSalary: 0,
+          mainCosts: 0,
+          materials: 0,
+          mimExploitation: 0,
+          supportCosts: 0,
+          parentId: parentId || null,
+        })
+        .then((res: AxiosResponse<ServerResponse>) => {
+          const { changed, current } = res.data;
+          if (!current) return;
+
+          setRows((prev) => {
+            // Заменяем временный `tempRow` и обновляем изменённые строки
+            const replaceAndUpdateRows = (rows: Row[]): Row[] =>
+              updateRowsWithChanged(
+                rows.map((row) =>
+                  row.id === id
+                    ? { ...current, child: row.child || [] }
+                    : { ...row, child: replaceAndUpdateRows(row.child) },
+                ),
+                changed,
+              );
+
+            return replaceAndUpdateRows(prev);
+          });
+        })
+        .catch((error: AxiosError) => {
+          console.error("Ошибка при создании строки:", error.message);
+        })
+        .finally(() => {
+          setIsAdding(false);
+          setParentId(null);
+        });
+    } else {
+      axios
+        .post(
+          `${API_URL}/v1/outlay-rows/entity/${E_ID}/row/${id}/update`,
+          updatedData,
+        )
+        .then((res: AxiosResponse<ServerResponse>) => {
+          const { changed, current } = res.data;
+          if (!current) return;
+
+          setRows((prevRows) => updateRowsWithChanged(prevRows, changed));
+        })
+        .catch((error: AxiosError) => {
+          console.error("Ошибка при обновлении строки:", error.message);
+        });
+    }
+
     setEditingRow(null);
   };
 
@@ -250,35 +258,75 @@ export default function Dashboard(): JSX.Element {
   };
 
   const handleChange = (id: number, field: keyof Row, value: string) => {
-    setRows((prevRows) =>
-      prevRows.map((row) => (row.id === id ? { ...row, [field]: value } : row)),
-    );
+    const cleanValue = field !== "rowName" ? value.replace(/\s/g, "") : value;
+    const updateRows = (items: Row[]): Row[] => {
+      return items.map((item) => {
+        if (item.id === id) {
+          return { ...item, [field]: cleanValue };
+        }
+        if (item.child && item.child.length > 0) {
+          return {
+            ...item,
+            child: updateRows(item.child),
+          };
+        }
+        return item;
+      });
+    };
+
+    setRows((prev) => updateRows(prev));
   };
 
   const handleDelete = (id: number) => {
     axios
       .delete(`${API_URL}/v1/outlay-rows/entity/${E_ID}/row/${id}/delete`)
       .then((res: AxiosResponse<ServerResponse>) => {
-        if (res.data.changed.length === 0 && res.data.current === null) {
+        const { changed, current } = res.data;
+
+        if (changed.length === 0 && current === null) {
           const initialRow = createNewRow(null);
           setRows([initialRow]);
           setEditingRow(initialRow.id);
           setIsAdding(true);
           return;
         }
-        const deleteRowRecursively = (rows: Row[]): Row[] => {
+
+        const deleteRowRecursively = (rows: Row[], targetId: number): Row[] => {
           return rows
-            .filter((row) => row.id !== id)
+            .filter((row) => row.id !== targetId)
             .map((row) => ({
               ...row,
-              child: deleteRowRecursively(row.child),
+              child: deleteRowRecursively(row.child, targetId),
             }));
         };
 
-        setRows((prevRows) => deleteRowRecursively(prevRows));
+        const updateRowsWithChanged = (
+          rows: Row[],
+          changedRows: Row[],
+        ): Row[] => {
+          return rows.map((row) => {
+            const changedRow = changedRows.find((c) => c.id === row.id);
+            if (changedRow) {
+              return {
+                ...changedRow,
+                child: updateRowsWithChanged(row.child, changedRows),
+              };
+            }
+            return {
+              ...row,
+              child: updateRowsWithChanged(row.child, changedRows),
+            };
+          });
+        };
+
+        setRows((prevRows) => {
+          const afterDelete = deleteRowRecursively(prevRows, id);
+          const updatedRows = updateRowsWithChanged(afterDelete, changed);
+          return updatedRows;
+        });
       })
       .catch((error: AxiosError) => {
-        console.error(error.message);
+        alert(`Ошибка при удалении строки - ${error.message}`);
       });
   };
 
@@ -380,7 +428,7 @@ export default function Dashboard(): JSX.Element {
             <td>
               <div className={styles.inputWrapper}>
                 <input
-                  defaultValue={row.rowName ?? ""}
+                  value={row.rowName ?? ""}
                   className={styles.editableInput}
                   ref={isEditing ? rowName : null}
                   readOnly={!isEditing}
@@ -396,7 +444,7 @@ export default function Dashboard(): JSX.Element {
               <input
                 className={styles.numberInput}
                 type="string"
-                defaultValue={formatNumber(row.salary) ?? ""}
+                value={formatNumber(row.salary) ?? ""}
                 ref={isEditing ? salary : null}
                 readOnly={!isEditing}
                 onDoubleClick={() => handleEdit(row.id)}
@@ -408,7 +456,7 @@ export default function Dashboard(): JSX.Element {
               <input
                 className={styles.numberInput}
                 type="string"
-                defaultValue={formatNumber(row.equipmentCosts) ?? ""}
+                value={formatNumber(row.equipmentCosts) ?? ""}
                 ref={isEditing ? equipmentCosts : null}
                 readOnly={!isEditing}
                 onDoubleClick={() => handleEdit(row.id)}
@@ -422,7 +470,7 @@ export default function Dashboard(): JSX.Element {
               <input
                 className={styles.numberInput}
                 type="string"
-                defaultValue={formatNumber(row.overheads) ?? ""}
+                value={formatNumber(row.overheads) ?? ""}
                 ref={isEditing ? overheads : null}
                 readOnly={!isEditing}
                 onDoubleClick={() => handleEdit(row.id)}
@@ -436,7 +484,7 @@ export default function Dashboard(): JSX.Element {
               <input
                 className={styles.numberInput}
                 type="string"
-                defaultValue={formatNumber(row.estimatedProfit) ?? ""}
+                value={formatNumber(row.estimatedProfit) ?? ""}
                 ref={isEditing ? estimatedProfit : null}
                 readOnly={!isEditing}
                 onDoubleClick={() => handleEdit(row.id)}
