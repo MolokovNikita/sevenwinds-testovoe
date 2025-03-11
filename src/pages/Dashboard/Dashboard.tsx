@@ -161,16 +161,22 @@ export default function Dashboard(): JSX.Element {
       if (isAdding) {
         axios
           .post(`${API_URL}/v1/outlay-rows/entity/${E_ID}/row/create`, {
-            equipmentCosts: parseFloat(equipmentCosts.current.value),
-            estimatedProfit: parseFloat(estimatedProfit.current?.value || "0"),
+            equipmentCosts: parseFloat(
+              equipmentCosts.current.value.replace(/\s/g, ""),
+            ),
+            estimatedProfit: parseFloat(
+              (estimatedProfit.current?.value || "0").replace(/\s/g, ""),
+            ),
             machineOperatorSalary: 0,
             mainCosts: 0,
             materials: 0,
             mimExploitation: 0,
-            overheads: parseFloat(overheads.current?.value || "0"),
+            overheads: parseFloat(
+              (overheads.current?.value || "0").replace(/\s/g, ""),
+            ),
             parentId: parentId ? parentId : null,
             rowName: rowName.current.value,
-            salary: parseFloat(salary.current.value),
+            salary: parseFloat(salary.current.value.replace(/\s/g, "")),
             supportCosts: 0,
           })
           .then((res: AxiosResponse<ServerResponse>) => {
@@ -212,10 +218,16 @@ export default function Dashboard(): JSX.Element {
           .post(`${API_URL}/v1/outlay-rows/entity/${E_ID}/row/${id}/update`, {
             ...updatedRow,
             rowName: rowName.current.value,
-            salary: parseFloat(salary.current.value),
-            equipmentCosts: parseFloat(equipmentCosts.current.value),
-            overheads: parseFloat(overheads.current?.value || "0"),
-            estimatedProfit: parseFloat(estimatedProfit.current?.value || "0"),
+            salary: parseFloat(salary.current.value.replace(/\s/g, "")),
+            equipmentCosts: parseFloat(
+              equipmentCosts.current.value.replace(/\s/g, ""),
+            ),
+            overheads: parseFloat(
+              (overheads.current?.value || "0").replace(/\s/g, ""),
+            ),
+            estimatedProfit: parseFloat(
+              (estimatedProfit.current?.value || "0").replace(/\s/g, ""),
+            ),
           })
           .then((res: AxiosResponse<ServerResponse>) => {
             console.log("Данные успешно обновлены:", res.data);
