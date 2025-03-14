@@ -1,4 +1,5 @@
 import Layout from "../../components/layouts/Layout.tsx";
+import { Analytics } from "@vercel/analytics/react";
 import styles from "./Dashboard.module.scss";
 import React, {
   useEffect,
@@ -521,6 +522,7 @@ export default function Dashboard(): JSX.Element {
         )}
         {errorText ? <td>{errorText}</td> : null}
       </table>
+      <Analytics />
     </Layout>
   );
 }
